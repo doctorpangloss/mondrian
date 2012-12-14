@@ -1,0 +1,416 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Piet Mondrian Generator</title>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-11459946-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<script language="javascript" type="application/javascript" src="libs/jquery.min.js"></script>
+<script type="text/javascript" language="javascript" src="libs/jquery.address-1.2.1.min.js"></script>
+<script type="text/javascript" src="libs/jquery.cycle.min.js"></script>
+<script language="javascript" type="application/javascript" src="libs/raphael-min.js"></script>
+<script language="javascript" type="application/javascript" src="mondrian.js"></script>
+<script language="javascript" src="preps.js"></script>
+<script language="javascript" src="nouns.js"></script>
+<style type="text/css">
+<!--
+@font-face {
+	font-family: "PetraRegular";
+	src: url('fonts/petra-regular.ttf');
+}
+
+@font-face {
+	font-family: "ElectraRegular";
+	src: url('fonts/electra-regular.otf');
+}
+
+@font-face {
+	font-family: "DeStijlRegular";
+	src: url('fonts/destijl-regular.otf');
+}
+
+body {
+	font: 10pt "Courier New", Courier, monospace;
+	background: #000;
+	background-image:url(bg.png);
+	background-position:center;
+	background-attachment:fixed;
+	margin: 0;
+	padding: 0;
+	color: #000;
+}
+
+/* ~~ Element/tag selectors ~~ */
+ul, ol, dl { /* Due to variations between browsers, it's best practices to zero padding and margin on lists. For consistency, you can either specify the amounts you want here, or on the list items (LI, DT, DD) they contain. Remember that what you do here will cascade to the .nav list unless you write a more specific selector. */
+	padding: 0;
+	margin: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+	margin-top: 0;	 /* removing the top margin gets around an issue where margins can escape from their containing div. The remaining bottom margin will hold it away from any elements that follow. */
+	margin-bottom:0;
+	padding-right: 0;
+	padding-left: 0; /* adding the padding to the sides of the elements within the divs, instead of the divs themselves, gets rid of any box model math. A nested div with side padding can also be used as an alternate method. */
+}
+
+p {
+	margin-top: 0;	 /* removing the top margin gets around an issue where margins can escape from their containing div. The remaining bottom margin will hold it away from any elements that follow. */
+	padding-right: 0;
+	padding-left: 0; /* adding the padding to the sides of the elements within the divs, instead of the divs themselves, gets rid of any box model math. A nested div with side padding can also be used as an alternate method. */
+}
+
+.menu {
+	list-style:none;
+	display:inline;
+}
+
+.menu li {
+	display:inline;
+	margin: 5px 5px 5px 5px;
+}
+
+.webkit-background {
+	z-index:1;
+	opacity:0.0;
+	-o-transition-property: opacity;
+	-o-transition-duration: 0.25s;
+	-moz-transition-property: opacity;
+	-moz-transition-duration: 0.25s;
+	-webkit-transition-property: opacity;
+	-webkit-transition-duration: 0.25s;
+}
+
+.webkit-foreground {
+	z-index:50 !important;
+	opacity:1.0;
+}
+
+h1.title {
+	font-family:"DeStijlRegular";
+	font-size:72px;
+	text-align:center;
+}
+
+#pages {
+	position:relative;
+	width:720px;
+	height:1500px;
+	margin: 0 auto 0 auto;
+}
+
+.page {
+	position:absolute;
+	top:0px;
+	left:0px;
+	z-index:0;
+	display:block;
+	width:720px;
+	height:auto;
+	margin: 0 auto 0 auto;
+	padding: 0;
+}
+
+
+
+#thumbnails, #cart {
+	padding: 20px 0 0 20px;;
+}
+
+.thumbnail {
+	float:left;
+	position:relative;
+	display:inline-block;
+	width:208px;
+	height:320px;
+	margin:0 10px 10px 0;
+	border-color:#000;
+	border-style:solid;
+	border-width:3px;
+	-webkit-transition: -webkit-box-shadow 0.1s linear;
+}
+
+.mondrian-thumb {
+	border: solid 1px black;
+	width:192px;
+	height:192px;
+	display:block;
+	margin: 8px 8px 0 8px;
+}
+
+
+.thumbnail:hover {
+	-webkit-box-shadow: 0px 8px 10px rgba(0,0,0,.8);
+}
+
+.thumbnail .text {
+	display:table;
+	width:94%;
+	height:112px;
+	margin-left:auto;
+	margin-right:auto;
+	text-align:center;
+}
+
+.text-container {
+	display:table-cell;
+	vertical-align:bottom;
+}
+
+.text p {
+	margin:0;
+	padding:0;
+}
+
+.text h3 {
+	margin:0;
+	padding:0;
+	text-transform:capitalize;
+}
+
+button, .button {
+	font: 14pt "Courier New", Courier, monospace;
+    margin:0 7px 0 0;
+	text-transform:uppercase;
+    background-color:#FFF;
+    border:3px solid #000;
+    font-size:100%;
+    line-height:130%;
+    text-decoration:none;
+    color:#000;
+    cursor:pointer;
+    padding:5px 10px 6px 7px; /* Links */
+}
+
+button:hover, .button:hover {
+	border-style:dashed;
+}
+
+form {
+	margin-left:10px;
+	margin-right:10px;
+}
+
+fieldset {   
+	width: 672px;
+	margin: 1.5em 0 0 0;   
+	padding: 0;  
+}  
+legend {   
+	margin-left: 1em;   
+	color: #000000;   
+	font-weight: bold;  
+}  
+fieldset ol {   
+	padding: 1em 1em 0 1em;   
+	list-style: none;  
+}  
+fieldset li {   
+	padding-bottom: 1em;  
+}  
+fieldset.submit {   
+	border-style: none;  
+}
+label {    
+	float: left;    
+	width: 10em;    
+	margin-right: 1em;    
+	text-align: right;   
+}
+
+
+a img { /* this selector removes the default blue border displayed in some browsers around an image when it is surrounded by a link */
+	border: none;
+}
+
+/* ~~ Styling for your site's links must remain in this order - including the group of selectors that create the hover effect. ~~ */
+a:link {
+	color: #000;
+	text-decoration: underline; /* unless you style your links to look extremely unique, it's best to provide underlines for quick visual identification */
+}
+a:visited {
+	color: #6E6C64;
+	text-decoration: underline;
+}
+a:hover, a:active, a:focus { /* this group of selectors will give a keyboard navigator the same hover experience as the person using a mouse. */
+	text-decoration: none;
+}
+
+/* ~~ this fixed width container surrounds all other elements ~~ */
+.container {
+	border: solid 15px black;
+	width: 700px;
+	height: auto;
+	background: #FFF;
+	margin: 0 auto; /* the auto value on the sides, coupled with the width, centers the layout */
+}
+
+/* ~~ This is the layout information. ~~ 
+
+1) Padding is only placed on the top and/or bottom of the div. The elements within this div have padding on their sides. This saves you from any "box model math". Keep in mind, if you add any side padding or border to the div itself, it will be added to the width you define to create the *total* width. You may also choose to remove the padding on the element in the div and place a second div within it with no width and the padding necessary for your design.
+
+*/
+.content {
+	height:auto;
+	padding: 10px 0;
+}
+
+/* ~~ miscellaneous float/clear classes ~~ */
+.fltrt {  /* this class can be used to float an element right in your page. The floated element must precede the element it should be next to on the page. */
+	float: right;
+	margin-left: 8px;
+}
+.fltlft { /* this class can be used to float an element left in your page. The floated element must precede the element it should be next to on the page. */
+	float: left;
+	margin-right: 8px;
+}
+.clearfloat { /* this class can be placed on a <br /> or empty div as the final element following the last floated div (within the #container) if the overflow:hidden on the .container is removed */
+	clear:both;
+	display:block;
+	visibility:hidden;
+	height:0;
+	font-size: 1px;
+	line-height: 0px;
+}
+.centered {
+	width:700px;
+	text-align:center;
+	margin-left:auto;
+	margin-right:auto;
+}
+-->
+</style></head>
+
+<body>
+
+
+<div class="container">
+  <div class="content">
+    <div class="centered">
+        <img src="images/The-Piet-Mondrian-Title.png" alt="The Piet Mondrian Experience" />
+        <div style="height:8px;"></div>
+        <table id="Table_01" width="700" height="167" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td colspan="3">
+			<img src="images/new_items_slices_01.gif" width="700" height="60" alt=""></td>
+	</tr>
+	<tr>
+		<td align="left" valign="top">
+			<a href="#items-0"><img src="images/new_items_slices_02.gif" width="290" height="47" alt=""></a></td>
+		<td rowspan="2">
+			<img src="images/new_items_slices_03.gif" width="76" height="107" alt=""></td>
+		<td align="left" valign="top">
+			<a href="#checkout"><img src="images/new_items_slices_04.png" width="334" height="47" alt=""></a></td>
+	</tr>
+	<tr>
+		<td>
+			<img src="images/new_items_slices_05.gif" width="290" height="60" alt=""></td>
+		<td>
+			<img src="images/new_items_slices_06.gif" width="334" height="60" alt=""></td>
+	</tr>
+</table>
+    </ul></div>
+    <div id="pages">
+        <div id="checkout" class="page">
+        <h2 style="text-align:center">Checkout</h2>
+        <h3>Your cart</h3>
+        <div id="cart">
+        	<div class="clearfloat"></div>
+        </div>
+        <h3 id="total">Total: $0.00</h3>
+                <form action="#thank-you">   
+                <fieldset>   
+                <legend>Billing Information</legend>   
+                <ol>   
+                <li>   
+                <label for="name">Name on card:</label>   
+                <input id="name" name="name" class="text" type="text" />   
+                </li>   
+                <li>   
+                <label for="name">Card number:</label>   
+                <input id="name" name="name" class="text" type="text" />   
+                </li>   
+                <li>   
+                <label for="address1">Address 1:</label>   
+                <input id="address1" name="address1" class="text"   
+                type="text" />   
+                </li>   
+                <li>   
+                <label for="address2">Address 2:</label>   
+                <input id="address2" name="address2" class="text"   
+                type="text" />   
+                </li>   
+                <li>   
+                <label for="suburb">City:</label>   
+                <input id="suburb" name="suburb" class="text"   
+                type="text" />   
+                </li>   
+                <li>   
+                <label for="postcode">Zip Code:</label>   
+                <input id="postcode" name="postcode"   
+                class="text textSmall" type="text" />   
+                </li>   
+                <li>   
+                <label for="email">Email address:</label>   
+                <input id="email" name="email" class="text" type="text" />   
+                </li>   
+                <li>   
+                <label for="phone">Telephone:</label>   
+                <input id="phone" name="phone" class="text" type="text" />   
+                </li>   
+                </ol>   
+                </fieldset>   
+                <fieldset>   
+                <legend>Delivery Information</legend>   
+                <ol>   
+                <li>   
+                <label for="shippingName">Name:</label>   
+                <input id="address1" name="address1" class="text"   
+                type="text" />   
+                </li>   
+                <li>   
+                <label for="address1">Address 1:</label>   
+                <input id="address1" name="address1" class="text"   
+                type="text" />   
+                </li>   
+                <li>   
+                <label for="address2">Address 2:</label>   
+                <input id="address2" name="address2" class="text"   
+                type="text" />   
+                </li>   
+                <li>   
+                <label for="suburb">City:</label>   
+                <input id="suburb" name="suburb" class="text"   
+                type="text" />   
+                </li>   
+                <li>   
+                <label for="postcode">Zip Code:</label>   
+                <input id="postcode" name="postcode"   
+                class="text textSmall" type="text" />   
+                </li>   
+                </ol>   
+                </fieldset>   
+                <fieldset class="submit">   
+                <button id="purchase" onclick="Mondrian.goto('#thank-you')">Purchase</button>
+<!--                <input class="submit" type="submit"   
+                value="Begin download" />   -->
+                </fieldset>  
+                </form>
+        </div>
+        <div id="thank-you" class="page">
+        	<p>Thank you for your purchase, you will receive an e-mail with a tracking number shortly.</p>
+        </div>
+    </div>
+    <!-- end .content --></div>
+  <!-- end .container --></div>
+</body>
+</html>
